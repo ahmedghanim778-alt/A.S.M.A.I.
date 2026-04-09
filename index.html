@@ -28,7 +28,6 @@
         flex-direction: column;
         align-items: center;
         justify-content: space-between;
-        /* زدنا الـ padding من فوق من 15px إلى 40px لظهور الهيدر كاملاً */
         padding: 40px 10px 15px 10px; 
         box-sizing: border-box;
     }
@@ -124,7 +123,6 @@
         border: 0.5px solid rgba(255,255,255,0.2) !important; 
     }
 
-    /* تعديل حجم خط "حصص" و "أقساط" لتظهر كاملة */
     .small-font-col {
         font-size: 7.5px !important;
     }
@@ -164,7 +162,6 @@
         text-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
 
-    /* عرض الأعمدة */
     .invest-table th:nth-child(1), .invest-table td:nth-child(1) { width: 14%; }
     .invest-table th:nth-child(2), .invest-table td:nth-child(2) { width: 8%; }
     .invest-table th:nth-child(3), .invest-table td:nth-child(3) { width: 13%; }
@@ -191,11 +188,13 @@
             <thead>
                 <tr>
                     <th>البائع</th>
-                    <th class="small-font-col">حصص</th> <th>شراء</th>
+                    <th class="small-font-col">حصص</th> 
+                    <th>شراء</th>
                     <th>مدفوع</th>
                     <th>متبقي</th>
                     <th>قسط</th>
-                    <th class="small-font-col">أقساط</th> <th>القيمة السوقية</th>
+                    <th class="small-font-col">أقساط</th> 
+                    <th>القيمة السوقية</th>
                 </tr>
             </thead>
             <tbody>
@@ -206,7 +205,7 @@
                     <td class="green-numbers">300,000</td>
                     <td class="green-numbers">0</td>
                     <td class="green-numbers">0</td>
-                    <td>0</td>
+                    <td id="safeMonths">0</td>
                     <td id="safeNow" class="now-value-black">0</td>
                 </tr>
                 <tr>
@@ -283,14 +282,16 @@ function updateDateTime() {
 
 async function fetchSheetData() {
     try {
-        const res = await fetch(SHEET_URL);
+        const res = await fetch(SHEET_URL + "&cache=" + new Date().getTime());
         const text = await res.text();
         const rows = text.split("\n").map(r => r.split(","));
         let data = {};
         rows.forEach(row => {
-            const key = row[0]?.trim();
-            const value = Number(row[1]?.trim()) || 0;
-            if (key) data[key] = value;
+            if (row[0]) {
+                const key = row[0].trim();
+                const value = parseFloat(row[1]) || 0;
+                data[key] = value;
+            }
         });
 
         lastPaidFarida = data["farida"] || 0;
@@ -299,7 +300,7 @@ async function fetchSheetData() {
         currentFaridaNow = data["NOW2"] || 0;
         
         calculateAll();
-    } catch(e) { console.error("Error fetching sheet data"); }
+    } catch(e) { console.error("Error fetching sheet data", e); }
 }
 
 async function fetchMarketData() {
@@ -319,7 +320,7 @@ async function fetchMarketData() {
         
         await fetchSheetData(); 
     } catch (e) { 
-        console.error("Error fetching market data");
+        console.error("Error fetching market data", e);
         fetchSheetData();
     }
 }
@@ -330,27 +331,31 @@ function calculateAll() {
     const remainFarida = Math.max(0, buyFarida - lastPaidFarida);
     const monthsFarida = remainFarida > 0 ? Math.ceil(remainFarida / installFarida) : 0;
 
+    // تحديث جدول فريدة
     document.getElementById("faridaPaid").innerText = lastPaidFarida.toLocaleString();
     document.getElementById("faridaRemain").innerText = remainFarida.toLocaleString();
     document.getElementById("faridaMonths").innerText = monthsFarida;
-    document.getElementById("safeNow").innerText = currentSafeNow.toLocaleString();
     document.getElementById("faridaNow").innerText = currentFaridaNow.toLocaleString();
+    
+    // تحديث SAFE
+    document.getElementById("safeNow").innerText = currentSafeNow.toLocaleString();
 
+    // المجموع
     document.getElementById("sumPaid").innerText = (300000 + lastPaidFarida).toLocaleString();
     document.getElementById("sumRemain").innerText = remainFarida.toLocaleString();
     document.getElementById("sumInstall").innerText = (remainFarida > 0 ? installFarida : 0).toLocaleString();
     document.getElementById("sumMonths").innerText = monthsFarida;
-    document.getElementById("sumNow").innerText = (currentSafeNow + currentFaridaNow).toLocaleString();
+    const totalNowRealEstate = currentSafeNow + currentFaridaNow;
+    document.getElementById("sumNow").innerText = totalNowRealEstate.toLocaleString();
 
+    // الذهب
     let goldValueEGP = 0;
     document.getElementById("goldDebts").innerText = goldDebtsSheet.toLocaleString();
 
     if (currentGoldPriceAED > 0) {
         const grams = 141.1;
         const totalAED = grams * currentGoldPriceAED;
-        
-        const totalAEDElement = document.getElementById("totalGoldAED");
-        totalAEDElement.innerText = totalAED.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        document.getElementById("totalGoldAED").innerText = totalAED.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
         
         if (currentExchangeRate > 0) {
             goldValueEGP = totalAED * currentExchangeRate;
@@ -358,7 +363,7 @@ function calculateAll() {
         }
     }
 
-    const totalNowRealEstate = currentSafeNow + currentFaridaNow;
+    // الإجمالي العام
     const grandTotal = totalNowRealEstate + goldValueEGP;
     document.getElementById("grandTotalDisplay").innerText = grandTotal.toLocaleString();
 }
