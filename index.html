@@ -13,13 +13,12 @@
 <link rel="apple-touch-icon" href="icon.png">
 
 <style>
-    /* 1. الأساسيات وتثبيت الشاشة */
     html, body {
         background: linear-gradient(135deg, #e8f5e9, #c8e6c9) !important;
         margin: 0;
         padding: 0;
         height: 100vh;
-        overflow: hidden; /* لمنع التمرير */
+        overflow: hidden;
     }
 
     body {
@@ -29,7 +28,8 @@
         flex-direction: column;
         align-items: center;
         justify-content: space-between;
-        padding: 15px 10px;
+        /* زدنا الـ padding من فوق من 15px إلى 40px لظهور الهيدر كاملاً */
+        padding: 40px 10px 15px 10px; 
         box-sizing: border-box;
     }
 
@@ -40,15 +40,14 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: space-evenly; /* توزيع متساوي للمسافات */
+        justify-content: space-evenly;
     }
     
-    /* 2. تحسين الهيدر والعناوين */
     h1 { 
         text-align: center; 
         color: #1a237e; 
         font-size: clamp(16px, 4vw, 20px); 
-        margin: 5px 0; 
+        margin: 0 0 10px 0; 
         padding: 10px 25px;
         border: 2px solid #1a237e;
         border-radius: 15px;
@@ -63,7 +62,7 @@
         text-align: center; 
         background: linear-gradient(90deg, #1a237e, #283593);
         padding: 6px 20px;
-        margin: 10px 0 5px 0;
+        margin: 5px 0;
         border-radius: 50px;
         width: fit-content;
         box-shadow: 0 4px 10px rgba(0,0,0,0.1);
@@ -80,13 +79,11 @@
         gap: 8px;
     }
 
-    /* مؤشر النبض الأخضر (Live Status) */
     .pulse-dot {
         width: 8px;
         height: 8px;
         background: #27ae60;
         border-radius: 50%;
-        box-shadow: 0 0 0 rgba(39, 174, 96, 0.4);
         animation: pulse 2s infinite;
     }
 
@@ -96,7 +93,6 @@
         100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(39, 174, 96, 0); }
     }
 
-    /* 3. تأثيرات الجداول (Glassmorphism) */
     .table-container {
         width: 100%;
         border-radius: 12px;
@@ -128,6 +124,11 @@
         border: 0.5px solid rgba(255,255,255,0.2) !important; 
     }
 
+    /* تعديل حجم خط "حصص" و "أقساط" لتظهر كاملة */
+    .small-font-col {
+        font-size: 8.5px !important;
+    }
+
     td, tfoot td {
         color: #000000 !important;
         font-size: 10.5px; 
@@ -135,7 +136,6 @@
         border: 0.5px solid rgba(26, 35, 126, 0.2) !important;
     }
 
-    /* مخطط الألوان */
     .green-numbers { color: #2e7d32 !important; }
     .debt-color { color: #c62828 !important; }
     .now-value-black { color: #000000 !important; font-weight: 800; }
@@ -145,7 +145,6 @@
         color: #1a237e !important;
     }
 
-    /* 4. صندوق الإجمالي المطور */
     .grand-total-box {
         background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
         color: #ffffff;
@@ -158,12 +157,6 @@
         box-shadow: 0 10px 25px rgba(26, 35, 126, 0.3);
     }
 
-    .grand-total-box span:first-child {
-        font-size: 12px;
-        opacity: 0.9;
-        letter-spacing: 1px;
-    }
-
     .grand-total-box .value { 
         font-size: 28px; 
         font-weight: bold; 
@@ -171,17 +164,7 @@
         text-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
 
-    /* التجاوب الصغير */
-    @media screen and (max-height: 700px) {
-        h1 { font-size: 15px; padding: 5px 15px; }
-        h2 { font-size: 11px; margin: 5px 0; }
-        th { padding: 4px 1px; font-size: 9px; }
-        td { padding: 4px 1px; font-size: 9.5px; }
-        .grand-total-box { padding: 10px; }
-        .grand-total-box .value { font-size: 22px; }
-    }
-
-    /* تنسيق عرض أعمدة جدول العقارات */
+    /* عرض الأعمدة */
     .invest-table th:nth-child(1), .invest-table td:nth-child(1) { width: 14%; }
     .invest-table th:nth-child(2), .invest-table td:nth-child(2) { width: 8%; }
     .invest-table th:nth-child(3), .invest-table td:nth-child(3) { width: 13%; }
@@ -208,13 +191,11 @@
             <thead>
                 <tr>
                     <th>البائع</th>
-                    <th>حصص</th>
-                    <th>شراء</th>
+                    <th class="small-font-col">حصص</th> <th>شراء</th>
                     <th>مدفوع</th>
                     <th>متبقي</th>
-                    <th>شهري</th>
-                    <th>أقساط</th>
-                    <th>القيمة السوقية</th>
+                    <th>قسط</th>
+                    <th class="small-font-col">أقساط</th> <th>القيمة السوقية</th>
                 </tr>
             </thead>
             <tbody>
@@ -225,7 +206,7 @@
                     <td class="green-numbers">300,000</td>
                     <td class="green-numbers">0</td>
                     <td class="green-numbers">0</td>
-                    <td class="green-numbers">0</td>
+                    <td>0</td>
                     <td id="safeNow" class="now-value-black">0</td>
                 </tr>
                 <tr>
@@ -286,7 +267,7 @@
 </div>
 
 <script>
-const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSpXigbGbwbDvH-Q6HuhnGxDdprrXFfth0kS0487CLRSxMrg2Id9TSoUSQLoXQz1V2ynG7vu_-FHesv/pub?output=csv";
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSpXigbGbwbDvH-Q6HuhnGxDdprrXFfth0kS0487CLRSxMrg2Id9TSoUSQLoXz1V2ynG7vu_-FHesv/pub?output=csv";
 let currentGoldPriceAED = 0;
 let currentExchangeRate = 0;
 let currentSafeNow = 0;
@@ -344,7 +325,6 @@ async function fetchMarketData() {
 }
 
 function calculateAll() {
-    // 1. حسابات العقارات
     const buyFarida = 133544;
     const installFarida = 9455;
     const remainFarida = Math.max(0, buyFarida - lastPaidFarida);
@@ -362,7 +342,6 @@ function calculateAll() {
     document.getElementById("sumMonths").innerText = monthsFarida;
     document.getElementById("sumNow").innerText = (currentSafeNow + currentFaridaNow).toLocaleString();
 
-    // 2. حسابات الذهب
     let goldValueEGP = 0;
     document.getElementById("goldDebts").innerText = goldDebtsSheet.toLocaleString();
 
@@ -379,7 +358,6 @@ function calculateAll() {
         }
     }
 
-    // 3. الإجمالي العام
     const totalNowRealEstate = currentSafeNow + currentFaridaNow;
     const grandTotal = totalNowRealEstate + goldValueEGP;
     document.getElementById("grandTotalDisplay").innerText = grandTotal.toLocaleString();
