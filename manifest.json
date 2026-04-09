@@ -1,6 +1,6 @@
 {
-  "name": "عائلتي الحبيبة",
-  "short_name": "عائلتي",
+  "name": "My.Family",
+  "short_name": "My.Family",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#000000",
